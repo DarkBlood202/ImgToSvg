@@ -17,7 +17,7 @@ def img_to_bw(filename, bw_output_name):
     # Read file and load to opencv
     img = cv2.imread(filename, 2)
     # Get BW based on color value
-    ret, bw = cv2.threshold(img, 170, 255, cv2.THRESH_BINARY)
+    ret, bw = cv2.threshold(img, 120, 255, cv2.THRESH_BINARY)
     # Write BW image to disk
     try:
         cv2.imwrite(bw_output_name, bw)
