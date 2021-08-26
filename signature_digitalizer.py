@@ -1,16 +1,26 @@
 import sys, subprocess, shutil, os, cv2
 from wand.image import Image
 
-def create_directories(raw_filename):
-    try: 
-        os.mkdir('signatures') 
-    except: 
-        pass 
+BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 
-    try: 
-        os.mkdir(f'signatures\{raw_filename}') 
-    except: 
+def create_directories(raw_filename):
+    try:
+        os.mkdir("signatures")
+    except:
         pass
+
+    try:
+        # os.mkdir(f'signatures/{raw_filename}')
+        os.mkdir(
+            os.path.join(
+                BASE_DIR,
+                "signatures",
+                raw_filename
+            )
+        )
+    except:
+        pass
+
 
 def img_to_bw(filename, bw_output_name):
 
@@ -22,19 +32,22 @@ def img_to_bw(filename, bw_output_name):
     try:
         cv2.imwrite(bw_output_name, bw)
     except:
-        raise Exception('Colocar imagen de la firma en la carpeta raiz del proyecto') 
+        raise Exception("Colocar imagen de la firma en la carpeta raiz del proyecto")
+
 
 def bw_to_pnm(filename_bw, pnm_output_name):
 
     with Image(filename=filename_bw) as img:
-        img.format = 'pnm'
+        img.format = "pnm"
         img.save(filename=pnm_output_name)
+
 
 def svg_to_jpg(svg_output_name, jpg_output_name):
 
     with Image(filename=svg_output_name) as img:
-        img.format = 'jpg'
+        img.format = "jpg"
         img.save(filename=jpg_output_name)
+
 
 # Getting command-line arguments
 try:
@@ -47,12 +60,17 @@ raw_filename = filename.rpartition(".")[0]
 ext_filename = filename.rpartition(".")[2]
 
 # Setting output names
-bw_output_name = f'{raw_filename}_bw.{ext_filename}'
-pnm_output_name = f'{raw_filename}.pnm'
-svg_output_name = f'{raw_filename}.svg'
-jpg_output_name = f'{raw_filename}_final.jpg'
+bw_output_name = f"{raw_filename}_bw.{ext_filename}"
+pnm_output_name = f"{raw_filename}.pnm"
+svg_output_name = f"{raw_filename}.svg"
+jpg_output_name = f"{raw_filename}_final.jpg"
 
-output_filenames_list = [bw_output_name, pnm_output_name, svg_output_name,jpg_output_name]
+output_filenames_list = [
+    bw_output_name,
+    pnm_output_name,
+    svg_output_name,
+    jpg_output_name,
+]
 
 # Calls to bw function
 img_to_bw(filename, bw_output_name)
@@ -64,12 +82,15 @@ create_directories(raw_filename)
 bw_to_pnm(bw_output_name, pnm_output_name)
 
 # Convert from pnm to svg format
-subprocess.Popen(f'potrace {pnm_output_name} --svg -o {svg_output_name}', shell=True).wait()
+subprocess.Popen(
+    f"potrace {pnm_output_name} --svg -o {svg_output_name}", shell=True
+).wait()
 
 # Convert from svg to jpg format
 svg_to_jpg(svg_output_name, jpg_output_name)
 
 # Move all output files to a separate directory
 for output_filename in output_filenames_list:
-    target = f'signatures\{raw_filename}\{output_filename}'
-    shutil.move(output_filename,target)
+    # target = f"signatures\{raw_filename}\{output_filename}"
+    target = os.path.join(BASE_DIR, "signatures", raw_filename, output_filename)
+    shutil.move(output_filename, target)
