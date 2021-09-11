@@ -1,12 +1,16 @@
-# Vectorización de una imagen
-## Proceso funcional actual en script
-### Dependencias
-+ Potrace
+# Signature digitalizer script (version 3)
+## Dependencies
 + Python 3.9
++ OpenCV
++ [Pypotrace (custom fork)](https://github.com/DarkBlood202/pypotrace-xml)
 
-Colocar la firma a digitalizar en la carpeta raiz del proyecto
+## Description
+The script reads signature images and traces over them using potrace library. SVG files are generated under the "signatures" folder.
 
-Ejecutar en una terminal:
+## Usage (as of version 3)
+1. Place desired signature image inside root folder.
+2. Execute in a terminal:
 ~~~
-python signature_digitalizer.py <filename><file extension>
+python digitalizer-v3.py -f <filename>
 ~~~
+
