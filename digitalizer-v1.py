@@ -1,7 +1,15 @@
+# Signature digitalizer version 1
+# ===================================================
+# Generates images (bw, pnm, binary) as mid-products.
+# Requires potrace (binary) installed on the system.
+# 
+# Usage: python digitalizer-v1.py -f <filename>
+
 import sys, subprocess, shutil, os, cv2
 from wand.image import Image
 
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
+
 
 def create_directories(raw_filename):
     try:
@@ -11,39 +19,31 @@ def create_directories(raw_filename):
 
     try:
         # os.mkdir(f'signatures/{raw_filename}')
-        os.mkdir(
-            os.path.join(
-                BASE_DIR,
-                "signatures",
-                raw_filename
-            )
-        )
+        os.mkdir(os.path.join(BASE_DIR, "signatures", raw_filename))
     except:
         pass
 
 
 def img_to_bw(filename, bw_output_name):
-
     # Read file and load to opencv
     img = cv2.imread(filename, 2)
     # Get BW based on color value
-    ret, bw = cv2.threshold(img, 120, 255, cv2.THRESH_BINARY)
+    bw = cv2.threshold(img, 120, 255, cv2.THRESH_BINARY)
     # Write BW image to disk
     try:
-        cv2.imwrite(bw_output_name, bw)
-    except:
-        raise Exception("Colocar imagen de la firma en la carpeta raiz del proyecto")
+        cv2.imwrite("./aquipaco/loco.jpg", bw)
+    except FileExistsError:
+        # raise Exception("Colocar imagen de la firma en la carpeta raiz del proyecto")
+        pass
 
 
 def bw_to_pnm(filename_bw, pnm_output_name):
-
     with Image(filename=filename_bw) as img:
         img.format = "pnm"
         img.save(filename=pnm_output_name)
 
 
 def svg_to_jpg(svg_output_name, jpg_output_name):
-
     with Image(filename=svg_output_name) as img:
         img.format = "jpg"
         img.save(filename=jpg_output_name)
